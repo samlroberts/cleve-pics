@@ -6,5 +6,25 @@
   </head>
   <body>
     <!-- page content -->
+    <h1>Hello world</h1>
+	<script>
+	var twitter_api = 'https://api.twitter.com/1.1/'
+
+	var consumer_key    = '0KDTbTS5fvEZGorYg5kPoCNeL';
+	var consumer_secret = 'YuS1QJiS4sRfYQbfbgr1jxHmXq8awcnY8Rf0H5NVr3kE45FACF';
+
+	// this should be done better in the future
+	function httpGet(theUrl){
+		var xmlHttp = null;
+		xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", theUrl, false );
+		// xmlHttp.setRequestHeader('Authorization',localStorage.$LoopBack$accessTokenId);
+		xmlHttp.send( null );
+		return xmlHttp.responseText;
+	}
+
+	console.log(httpGet('https://api.twitter.com/1.1/search/tweets.json?q=%23inthecle&mode=photos'));
+
+	</script>
   </body>
 </html>
