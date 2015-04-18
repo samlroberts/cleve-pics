@@ -4,7 +4,6 @@
   "description": "",
   "main": "twitter.js",
   "dependencies": {
-    "ntwitter": "^0.5.0",
     "twitter": "^1.2.5"
   },
   "devDependencies": {},
