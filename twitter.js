@@ -1,1 +1,1 @@
-var request = require('ntwitter');
+var request = require('request');
