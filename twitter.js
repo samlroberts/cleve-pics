@@ -1,4 +1,5 @@
-var request = require('request')
+var request = require('request');
+var queryString = require('querystring');
 var twitter_api = 'https://api.twitter.com/1.1/';
 var consumer_key        = 'Pa1IpwxdqsAO6PNEHXceY1oib';
 var consumer_secret     = 'Dw9XzqKBk7jh1baqVTr6LzsqeV3oKl0dTWFgQERMIp8okNXC1V';
@@ -32,9 +33,16 @@ var access_token = 'AAAAAAAAAAAAAAAAAAAAAG07fQAAAAAABuhm%2FwUfhCgV%2FbykVEqEhDTt
 // 		console.log(response);
 // 	}
 // });
+// 
+var hashTags= [
+	'#happyincle',
+	'#cle',
+
+]
+var searchTerm = queryString.escape(hashTags.join(' '));
 
 var options = {
-  url: 'https://api.twitter.com/1.1/search/tweets.json?q=%23happyincle&src=typd&mode=photos',
+  url: 'https://api.twitter.com/1.1/search/tweets.json?q='+searchTerm+'&src=typd&mode=photos',
   headers: {
     Authorization: 'Bearer '+access_token,
     Host:'api.twitter.com',
@@ -43,25 +51,26 @@ var options = {
   }
 };
  
-function callback(error, response, body) {
-	var output = [];
-	if (!error && response.statusCode == 200) {
-		var info = JSON.parse(body);
-		// console.log(info.statuses.length);
-		for (var i = 0; i < info.statuses.length; i++) {
-			debugger;
-			if(info.statuses[i].entities && info.statuses[i].entities.media && info.statuses[i].entities.media[0].media_url){
-				output.push(info.statuses[i].entities.media[0].media_url)
-			}
-		}
-		console.log(output)
-	} else {
-		console.log(response)
-	}
-}
- 
 
-// request(options,callback)
+module.exports = function(cb){
+	request(options,function callback(error, response, body) {
+		var output = [];
+		if (!error && response.statusCode == 200) {
+			var info = JSON.parse(body);
+			console.log('got %s tweets',info.statuses.length);
+			for (var i = 0; i < info.statuses.length; i++) {
+				debugger;
+				if(info.statuses[i].entities && info.statuses[i].entities.media && info.statuses[i].entities.media[0].media_url){
+					output.push({url:info.statuses[i].entities.media[0].media_url})
+				}
+			}
+			console.log('found %s images',output.length)
+			cb(output);
+		} else {
+			console.log(response)
+		}
+	});
+}
 
 var testImages = [ 'http://pbs.twimg.com/media/CC5xUEgUIAEjAo3.jpg',
   'http://pbs.twimg.com/media/CC5MogZW4AAZfmu.jpg',
