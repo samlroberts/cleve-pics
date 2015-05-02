@@ -37,7 +37,8 @@ var access_token = 'AAAAAAAAAAAAAAAAAAAAAG07fQAAAAAABuhm%2FwUfhCgV%2FbykVEqEhDTt
 var hashTags= [
 	'#happyincle',
 	'#cle',
-
+	'#thisiscle',
+	'#allincle'
 ]
 var searchTerm = queryString.escape(hashTags.join(' '));
 
