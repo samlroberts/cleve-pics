@@ -59,7 +59,7 @@ client.stream('statuses/filter', {track: hashTags.join(',')},  function(stream){
 		console.log(tweet.text);
 		var imageURL = null;
 		if(tweet.entities && tweet.entities.media && tweet.entities.media[0].media_url){
-			imageURL = {url:tweet.entities.media[0].media_url};
+			imageURL = tweet.entities.media[0].media_url;
 		}
 		io.emit('newImage',{tweet:tweet,url:imageURL});
 	});
