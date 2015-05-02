@@ -15,6 +15,9 @@
 		io.on('newImage',function(data){
 			console.log('new Image');
 			console.log(data);
+			var url = data.url;
+			var imgnode = document.createElement('img');
+			document.getElementByID('photos').appendChild(d);
 		});
 	</script>
 </head>
