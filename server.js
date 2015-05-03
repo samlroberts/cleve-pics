@@ -19,8 +19,15 @@ var testImages = [ {url:'http://pbs.twimg.com/media/CC5xUEgUIAEjAo3.jpg'},
 	{url:'http://pbs.twimg.com/media/CC5MogZW4AAZfmu.jpg'},
 	{url:'http://pbs.twimg.com/media/CC5m4oTWIAEm0kf.jpg'} ]
 
+getImages(50,function(imageArray){
+	testImages = imageArray
+	imageArray.forEach(function(entry){
+		console.log(entry.url)
+	})
+});
+
 app.get('/', function (req, res) {
-	getImages(function(imageObject){
+	getImages(20,function(imageObject){
 		console.log(imageObject)
 			res.render('home',{images:imageObject});
 	});

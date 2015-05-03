@@ -40,43 +40,67 @@ var hashTags= [
 	'#thisiscle',
 	'#allincle'
 ]
-var searchTerm = queryString.escape(hashTags.join(' '));
+var searchTerm = queryString.escape(hashTags.join(' OR '));
+var api_base = 'https://api.twitter.com/1.1/search/tweets.json'
 
-var options = {
-  url: 'https://api.twitter.com/1.1/search/tweets.json?q='+searchTerm+'&src=typd&mode=photos',
-  headers: {
-    Authorization: 'Bearer '+access_token,
-    Host:'api.twitter.com',
-    'X-Target-URI':'https://api.twitter.com',
-    Connection:'Keep-Alive'
-  }
-};
- 
-
-module.exports = function(cb){
-	request(options,function callback(error, response, body) {
-		var output = [];
-		if (!error && response.statusCode == 200) {
-			var info = JSON.parse(body);
-			console.log('got %s tweets',info.statuses.length);
-			for (var i = 0; i < info.statuses.length; i++) {
-				debugger;
-				if(info.statuses[i].entities && info.statuses[i].entities.media && info.statuses[i].entities.media[0].media_url){
-					output.push({url:info.statuses[i].entities.media[0].media_url})
-				}
-			}
-			console.log('found %s images',output.length)
-			cb(output);
-		} else {
-			console.log(response)
+var options =function(data){
+	return {
+		url: api_base+data,
+		headers: {
+			Authorization: 'Bearer '+access_token,
+			Host:'api.twitter.com',
+			'X-Target-URI':'https://api.twitter.com',
+			Connection:'Keep-Alive'
 		}
-	});
+	};
 }
+var initialOptions = options('?q='+searchTerm+'&src=typd&mode=photos')
 
-var testImages = [ 'http://pbs.twimg.com/media/CC5xUEgUIAEjAo3.jpg',
-  'http://pbs.twimg.com/media/CC5MogZW4AAZfmu.jpg',
-  'http://pbs.twimg.com/media/CC5xUEgUIAEjAo3.jpg',
-  'http://pbs.twimg.com/media/CC6ARAoW0AADQXE.jpg',
-  'http://pbs.twimg.com/media/CC5xUEgUIAEjAo3.jpg',
-  'http://pbs.twimg.com/media/CC5MogZW4AAZfmu.jpg',
-  'http://pbs.twimg.com/media/CC5m4oTWIAEm0kf.jpg' ]
+module.exports = function(numWanted,cb){
+	var finalOutput = [];
+	request(initialOptions,requestCallback(searchCallback(cb)));
+
+	function searchCallback(cb){
+		return function(output,next_results){
+			finalOutput = finalOutput.concat(output);
+			if(finalOutput.length < numWanted){
+				// console.log('still need %s',numWanted)
+				request(options(next_results),requestCallback(searchCallback(cb)));
+			} else {
+				// console.log('have %s',numWanted)
+				cb(finalOutput)
+			}
+		}
+	}
+
+
+	// create the proper request callback that parses data and finds images
+	function requestCallback(callback){
+		return function(error, response, body) {
+			if (!error && response.statusCode == 200) {
+				var info = JSON.parse(body);
+				var output = findImages(info)
+				// console.log('found %s images',output.length);
+				callback(output,info.search_metadata.next_results);
+			} else {
+				console.log(response)
+				callback(null);
+			}
+		}
+	}
+
+	// actually sort out the images
+	function findImages(info,callback){
+		var output = [];
+		// console.log('got %s tweets',info.statuses.length);
+		for (var i = 0; i < info.statuses.length; i++) {
+			if(info.statuses[i].entities && info.statuses[i].entities.media && info.statuses[i].entities.media[0].media_url){
+				output.push({
+					tweet:info.statuses[i],
+					url:info.statuses[i].entities.media[0].media_url
+				});
+			}
+		}
+		return output
+	}
+}
