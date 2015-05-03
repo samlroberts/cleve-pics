@@ -11,6 +11,8 @@ var io = require('socket.io')(server);
 app.engine('handlebars', handlebars({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
+app.use(express.static('public'));
+
 var testImages = [ {url:'http://pbs.twimg.com/media/CC5xUEgUIAEjAo3.jpg'},
 	{url:'http://pbs.twimg.com/media/CC5MogZW4AAZfmu.jpg'},
 	{url:'http://pbs.twimg.com/media/CC5xUEgUIAEjAo3.jpg'},
