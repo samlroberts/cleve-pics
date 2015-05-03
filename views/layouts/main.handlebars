@@ -9,16 +9,26 @@
 
 		io.on('initialImages',function(data){
 			console.log('InitialImages');
-			console.log(data);
+			console.log(data.length);
+			for (var i=0; i<data.length; i++) {
+				prepend(data[i].url);
+			}
 		});
 
 		io.on('newImage',function(data){
 			console.log('new Image');
 			console.log(data);
-			var url = data.url;
-			var imgnode = document.createElement('img');
-			document.getElementByID('photos').appendChild(d);
+			prepend(data.url);
 		});
+
+		function prepend(url) {
+			if (url !== null) {
+				var imgnode = document.createElement('img');
+				imgnode.setAttribute('src', url);
+				var photos = document.getElementById('photos');
+				photos.insertBefore(imgnode, photos.childNodes[0]);
+			}
+		};
 	</script>
 </head>
 <body>
